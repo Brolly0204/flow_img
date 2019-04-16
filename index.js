@@ -13,6 +13,7 @@
       if (this.readyState === 4 && /^2\d{2}$/.test(this.status)) {
         const result = _utils.toJSON(this.responseText)
         render(result)
+        lazyLoad()
       }
     }
     xhr.send()
@@ -70,26 +71,28 @@
   }
 
   function lazyLoad() {
-    Array.from(imgAll).forEach(item => {
-      if (item.loaded) return;
+    for (let i = 0; i < imgAll.length; i++) {
+      const img = imgAll[i]
+      
+      if (img.loaded) continue;
 
-      const imgSrc = item.getAttribute('img-src')
+      const imgSrc = img.getAttribute('img-src')
       const clientHeight = _utils.win('clientHeight')
-      const offsetHeight = item.offsetHeight
+      const offsetHeight = img.offsetHeight
       const scrollTop = _utils.win('scrollTop')
-      const { top } = _utils.offset(item)
+      const { top } = _utils.offset(img)
 
       if (clientHeight + scrollTop >= top + offsetHeight) {
         let tempImg = new Image()
         tempImg.src = imgSrc
         tempImg.onload = function() {
-          item.src = imgSrc
-          item.loaded = true
+          console.log('load')
+          img.src = imgSrc
+          img.loaded = true
           tempImg = null
         }
       }
-
-    })
+    }
   }
 
   getImgData() // 获取初始数据 
