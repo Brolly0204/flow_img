@@ -1,4 +1,5 @@
 ~(function() {
+  const { win, offset, throttle } = window._utils
   const photoImg = document.getElementById('photoImg')
   const imgCols = photoImg.getElementsByTagName('li')
   const imgAll = photoImg.getElementsByTagName('img')
@@ -61,11 +62,11 @@
   }
 
   function loadMore() {
-    const scrollHeight = _utils.win('scrollHeight')
-    const scrollTop = _utils.win('scrollTop')
-    const clientHeight = _utils.win('clientHeight')
+    const scrollHeight = win('scrollHeight')
+    const scrollTop = win('scrollTop')
+    const clientHeight = win('clientHeight')
     if (scrollTop + clientHeight >= scrollHeight - 100) {
-      console.log('到达底部了')
+      // console.log('到达底部了')
       getImgData()
     }
   }
@@ -77,16 +78,16 @@
       if (img.loaded) continue;
 
       const imgSrc = img.getAttribute('img-src')
-      const clientHeight = _utils.win('clientHeight')
+      const clientHeight = win('clientHeight')
       const offsetHeight = img.offsetHeight
-      const scrollTop = _utils.win('scrollTop')
-      const { top } = _utils.offset(img)
+      const scrollTop = win('scrollTop')
+      const { top } = offset(img)
 
-      if (clientHeight + scrollTop >= top + offsetHeight) {
+      if (clientHeight + scrollTop >= top + offsetHeight/3) {
         let tempImg = new Image()
         tempImg.src = imgSrc
         tempImg.onload = function() {
-          console.log('load')
+          // console.log('load')
           img.src = imgSrc
           img.loaded = true
           tempImg = null
@@ -98,8 +99,17 @@
   getImgData() // 获取初始数据 
   lazyLoad() // 首次懒加载
 
-  window.onscroll = function () {
+
+  // window.onscroll = function () {
+  //   console.log('sroll')
+
+  //   loadMore()
+  //   lazyLoad()
+  // }
+
+  // 函数节流
+  window.onscroll = throttle(function () {
     loadMore()
     lazyLoad()
-  }
+  }, 300)
 })()
